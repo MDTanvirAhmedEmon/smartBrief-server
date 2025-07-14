@@ -1,0 +1,2 @@
+# selinam-backend
+# smartBrief-server
