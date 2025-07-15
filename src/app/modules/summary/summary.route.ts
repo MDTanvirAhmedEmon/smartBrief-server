@@ -9,6 +9,22 @@ router.post('/create', auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN),
     summaryController.createSummary
 )
 
+router.get('/my-summary', auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN),
+    summaryController.getMySummary
+)
+
+router.get('/', auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.EDITOR, ENUM_USER_ROLE.REVIEWER),
+    summaryController.getAllSummaries
+)
+
+router.delete('/:id', auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.EDITOR, ENUM_USER_ROLE.USER),
+    summaryController.deleteSummary
+)
+
+router.patch('/:id', auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.EDITOR, ENUM_USER_ROLE.USER),
+    summaryController.deleteSummary
+)
+
 
 
 
