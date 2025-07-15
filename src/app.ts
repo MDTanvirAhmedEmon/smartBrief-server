@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser';
 import globalErrorHandler from './app/middlewares/globalErrorHandler'
 import { createServer } from 'http';
 import path from 'path';
-import { logger } from './app/helpers/logger';
+// import { logger } from './app/helpers/logger';
 const app: Application = express()
 
 const httpServer = createServer(app);
@@ -16,7 +16,7 @@ app.use(express.json())
 app.use(cors())
 app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use(logger);
+// app.use(logger);
 app.use('/api/v1', router)
 
 app.use(globalErrorHandler)
