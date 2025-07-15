@@ -33,26 +33,43 @@ const createSummary = async (userId: any, data: ISummary) => {
                 role: "system",
                 content: "You are a helpful summarization assistant.",
             },
+            // {
+            //     role: "user",
+            //     // content: prompt || `Please summarize the following content:\n\n${originalContent}`,
+            //     content: `Please summarize the following content:\n\n${originalContent}`,
+            // },
             {
                 role: "user",
-                // content: prompt || `Please summarize the following content:\n\n${originalContent}`,
-                content: `Please summarize the following content:\n\n${originalContent}`,
+                content: `Please respond in JSON ONLY like:
+                    {
+                        "title": "Your generated title",
+                        "summary": "Your generated summary"
+                    }
+
+                    Content:
+                    ${originalContent}`
             },
         ],
     });
+    const raw = completion.choices[0].message?.content?.trim() || "";
 
-    console.log(completion.choices[0].message.content);
+    const jsonMatch = raw.match(/```json([\s\S]*?)```/i);
+    const jsonString = jsonMatch ? jsonMatch[1].trim() : raw;
 
-    completion.choices[0].message.content
+    let parsed;
+    try {
+        parsed = JSON.parse(jsonString);
+    } catch {
+        throw new Error("Could not parse OpenAI JSON response");
+    }
 
-
-    const summarizedContent = completion.choices[0].message?.content;
+    const { title, summary } = parsed;
 
     const result = await Summary.create({
         user: userId,
+        title,
         originalContent,
-        summarizedContent,
-        // promptUsed,
+        summarizedContent: summary,
         wordCount: originalContent.split(" ").length,
     });
 
@@ -71,6 +88,11 @@ const createSummary = async (userId: any, data: ISummary) => {
 
 const getMySummary = async (userId: any) => {
     const summary = await Summary.find({ user: userId });
+    return summary
+}
+
+const getSingleSummary = async (id: any) => {
+    const summary = await Summary.findById({_id: id})
     return summary
 }
 
@@ -142,6 +164,7 @@ const updateSummary = async (id: any, user: any, data: Partial<ISummary>): Promi
 export const summaryServices = {
     createSummary,
     getMySummary,
+    getSingleSummary,
     getAllSummaries,
     deleteSummary,
     updateSummary,

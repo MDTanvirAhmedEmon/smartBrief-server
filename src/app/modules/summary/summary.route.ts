@@ -17,12 +17,16 @@ router.get('/', auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.E
     summaryController.getAllSummaries
 )
 
+router.get('/:id', auth(ENUM_USER_ROLE.USER, ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.EDITOR, ENUM_USER_ROLE.REVIEWER),
+    summaryController.getSingleSummary
+)
+
 router.delete('/:id', auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.EDITOR, ENUM_USER_ROLE.USER),
     summaryController.deleteSummary
 )
 
 router.patch('/:id', auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.EDITOR, ENUM_USER_ROLE.USER),
-    summaryController.deleteSummary
+    summaryController.updateSummary
 )
 
 

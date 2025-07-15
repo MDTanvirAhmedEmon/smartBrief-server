@@ -35,6 +35,22 @@ const getMySummary = async (req: Request, res: Response, next: NextFunction) => 
     }
 }
 
+const getSingleSummary = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id = req.params.id
+        const result = await summaryServices.getSingleSummary(id)
+
+        res.status(200).json({
+            success: true,
+            message: 'get single summary successfully',
+            result,
+        })
+    }
+    catch (error) {
+        next(error)
+    }
+}
+
 const getAllSummaries = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { limit, page, sortBy, sortOrder, searchTerm } = req.query;
@@ -96,6 +112,7 @@ const updateSummary = async (req: Request, res: Response, next: NextFunction) =>
 export const summaryController = {
     createSummary,
     getMySummary,
+    getSingleSummary,
     getAllSummaries,
     deleteSummary,
     updateSummary,

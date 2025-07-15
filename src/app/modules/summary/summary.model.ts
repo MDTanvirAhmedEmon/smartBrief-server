@@ -15,6 +15,9 @@ const summarySchema = new Schema<ISummary>(
         summarizedContent: {
             type: String,
         },
+        title: {
+            type: String,
+        },
         prompt: {
             type: String,
         },

@@ -8,7 +8,6 @@ import bcrypt from 'bcrypt';
 import { sendEmail } from '../../utils/sendEmail';
 
 
-
 const verifyRegistration = async (data: any): Promise<any> => {
 
   const isExist = await User.findOne({ email: data?.email })
@@ -40,13 +39,15 @@ const logInUser = async (logInData: ILoginUser): Promise<any> => {
     throw new AppError(404, 'User not found!')
   }
 
+  console.log(isExist);
+
   if (isExist.isDeleted) {
     throw new AppError(404, 'User deleted!')
   }
 
   const matchedPassword = await bcrypt.compare(logInData?.password, isExist?.password);
   if (!matchedPassword) {
-    throw new AppError(401, 'Password do not matched!');
+    throw new AppError(400, 'Password do not matched!');
   }
   if (isExist.status === 'blocked') {
     throw new AppError(401, 'User is blocked!')

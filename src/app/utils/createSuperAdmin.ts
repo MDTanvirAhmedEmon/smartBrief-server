@@ -1,15 +1,11 @@
-import config from "../config";
-import bcrypt from 'bcrypt';
 import { User } from "../modules/users/user.model";
 
 const seedSuperAdmin = async () => {
-  const password = "admin777"
-  const hashedPassword = await bcrypt.hash(password, Number(config.bcrypt_salt_rounds))
-
+  const password = "77777777"
   const superUser = {
     fullName: "Admin",
-    email: "superadmin777@gmail.com",
-    password: hashedPassword,
+    email: "admin777@gmail.com",
+    password: password,
     role: "admin",
     status: "in-progress",
     isDeleted: false,
