@@ -6,6 +6,9 @@ import { ISummary } from "./summary.interface";
 import { Summary } from "./summary.model";
 import OpenAI from "openai";
 import { paginationHelpers } from "../../helpers/pagination";
+import redisClient from "../../redis/redis";
+import crypto from "crypto";
+
 
 interface IPaginationOptions {
     limit: number;
@@ -24,6 +27,23 @@ const createSummary = async (userId: any, data: ISummary) => {
 
     if ((userInfo?.credits || 0) < 1) {
         throw new AppError(400, "No credits left")
+    }
+
+    // Generate a safe unique cache key
+    const hash = crypto.createHash("sha256").update(originalContent).digest("hex");
+    const cacheKey = `summary:${userId}:${hash}`;
+
+    const cached = await redisClient.get(cacheKey);
+    if (cached) {
+        console.log("Using cached summary");
+        const { title, summary } = JSON.parse(cached);
+        if (!userInfo) {
+            throw new Error("User not found.");
+        }
+        const newCredits = (userInfo.credits - 1);
+
+        await User.findByIdAndUpdate(userId, { credits: newCredits });
+        return { title, summarizedContent: summary }
     }
 
     const completion = await openai.chat.completions.create({
@@ -64,6 +84,7 @@ const createSummary = async (userId: any, data: ISummary) => {
     }
 
     const { title, summary } = parsed;
+    console.log('open AI created');
 
     const result = await Summary.create({
         user: userId,
@@ -73,6 +94,8 @@ const createSummary = async (userId: any, data: ISummary) => {
         wordCount: originalContent.split(" ").length,
     });
 
+    // Cache it for 5 minutes
+    await redisClient.setEx(cacheKey, 300, JSON.stringify({ title, summary }));
 
 
     if (!userInfo) {
@@ -92,7 +115,7 @@ const getMySummary = async (userId: any) => {
 }
 
 const getSingleSummary = async (id: any) => {
-    const summary = await Summary.findById({_id: id})
+    const summary = await Summary.findById({ _id: id })
     return summary
 }
 

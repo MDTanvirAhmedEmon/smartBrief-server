@@ -15,4 +15,5 @@ export default {
   jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
   stripe_secret_key: process.env.STRIPE_SECRET_KEY,
   openai_key: process.env.OPENAI_KEY,
+  redis_url: process.env.REDIS_URL,
 }
