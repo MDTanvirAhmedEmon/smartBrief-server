@@ -45,4 +45,3 @@ Use these demo accounts to test different roles:
 
 ---
 
-## 📂 Project Structure (Frontend)
